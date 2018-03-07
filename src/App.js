@@ -1,11 +1,18 @@
-import React from 'react'
+import React from 'react';
 //import { Route } from 'react-router-dom'
-import * as BooksAPI from './BooksAPI'
-import './App.css'
+import * as BooksAPI from './BooksAPI';
+import './App.css';
 import ListBooks from './ListBooks';
 import BookShelf from './BookShelf';
 
 class BooksApp extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    //this.onChangeShelf = this.onChangeShelf.bind(this);
+
+  }
   state = {
     /**
      * TODO: Instead of using this state variable to keep track of which page
@@ -13,9 +20,7 @@ class BooksApp extends React.Component {
      * users can use the browser's back and forward buttons to navigate between
      * pages, as well as provide a good URL they can bookmark and share.
      * 
-     * 1. Create ListBooks component (homepage)
-     * 2. Create Search component
-     * 2. 
+     * 1. Render Books in this App.js file to allow better passing of data, e.g. when changing shelf at book level
      */
     showSearchPage: false,
     books: []
@@ -27,15 +32,30 @@ class BooksApp extends React.Component {
   
   componentDidMount() {
     BooksAPI.getAll().then((books) => {
-      this.setState({ books });
+      this.setState({ books }); console.log(books);
+    })
+
+    BooksAPI.update('sJf1vQAACAAJ', 'read').then((books) => {
+      console.log(books);
+    },
+    (err) => {
+      console.log('fail: ', err);
     })
   }
 
   getBooksByShelf(category){
-    let booksByShelf;
-    booksByShelf = this.state.books.filter((book) => book.shelf == category);
+    let booksByShelf = this.state.books.filter((book) => book.shelf == category);
     return booksByShelf;
   }
+
+  // onChangeShelf(id, shelf) {
+  //   BooksAPI.update('sJf1vQAACAAJ', 'read').then((books) => {
+  //     console.log(books);
+  //   },
+  //     (err) => {
+  //       console.log('fail: ', err);
+  //     })
+  // }
 
   render() {
     return (
@@ -62,8 +82,17 @@ class BooksApp extends React.Component {
             </div>
           </div>
         ) : (
+          this.state.books.length > 0 &&
           <ListBooks>
-            <BookShelf books={this.getBooksByShelf('currentlyReading')} bookShelfTitle='Currently Reading'/>            
+              <BookShelf books={this.getBooksByShelf('currentlyReading')} bookShelfTitle='Currently Reading' 
+              onChangeShelf={this.onChangeShelf} 
+              />
+              <BookShelf books={this.getBooksByShelf('wantToRead')} bookShelfTitle='Want to Read' 
+              onChangeShelf={this.onChangeShelf} 
+              />
+              <BookShelf books={this.getBooksByShelf('read')} bookShelfTitle='Read' 
+              onChangeShelf={this.onChangeShelf} 
+              />            
           </ListBooks>
         )}
       </div>
