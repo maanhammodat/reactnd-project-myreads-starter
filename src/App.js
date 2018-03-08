@@ -4,14 +4,15 @@ import * as BooksAPI from './BooksAPI';
 import './App.css';
 import ListBooks from './ListBooks';
 import BookShelf from './BookShelf';
+import Book from './Book';
 
 class BooksApp extends React.Component {
 
   constructor(props) {
     super(props);
 
-    //this.onChangeShelf = this.onChangeShelf.bind(this);
-
+    this.onChangeShelf = this.onChangeShelf.bind(this);
+    this.onAddBook = this.onAddBook.bind(this);
   }
   state = {
     /**
@@ -31,33 +32,67 @@ class BooksApp extends React.Component {
   // }
   
   componentDidMount() {
+    console.log('componentDidMount BooksApp');
     BooksAPI.getAll().then((books) => {
       this.setState({ books }); console.log(books);
-    })
-
-    BooksAPI.update('sJf1vQAACAAJ', 'read').then((books) => {
-      console.log(books);
-    },
-    (err) => {
-      console.log('fail: ', err);
     })
   }
 
   getBooksByShelf(category){
-    let booksByShelf = this.state.books.filter((book) => book.shelf == category);
+    let booksByShelf = this.state.books.filter((book) => book.shelf === category);
     return booksByShelf;
   }
 
-  // onChangeShelf(id, shelf) {
-  //   BooksAPI.update('sJf1vQAACAAJ', 'read').then((books) => {
-  //     console.log(books);
-  //   },
-  //     (err) => {
-  //       console.log('fail: ', err);
-  //     })
-  // }
+  onChangeShelf(book, newShelf){
+    
+    book.shelf = newShelf;
+    
+    this.setState((state) => ({
+      books: state.books.filter((b) => b.id !== book.id).concat([book])
+    }))
+
+    BooksAPI.update(book, newShelf);
+  }
+
+  onAddBook(){
+    this.setState({ showSearchPage: true });
+  }
 
   render() {
+
+    let currentShelf = this.getBooksByShelf('currentlyReading');
+    currentShelf = currentShelf.map((book, index) => {
+      return (
+        <Book
+          book={book}
+          key={index}
+          onChangeShelf={this.onChangeShelf}
+        />
+      )
+    });
+
+    let wantToReadShelf = this.getBooksByShelf('wantToRead');
+    wantToReadShelf = wantToReadShelf.map((book, index) => {
+      return (
+        <Book
+          book={book}
+          key={index}
+          onChangeShelf={this.onChangeShelf}
+        />
+      )
+    });
+
+    let readShelf = this.getBooksByShelf('read');
+    readShelf = readShelf.map((book, index) => {
+      return (
+        <Book
+          book={book}
+          key={index}
+          onChangeShelf={this.onChangeShelf}
+        />
+      )
+    });
+
     return (
       <div className="app">
         {this.state.showSearchPage ? (
@@ -83,16 +118,16 @@ class BooksApp extends React.Component {
           </div>
         ) : (
           this.state.books.length > 0 &&
-          <ListBooks>
-              <BookShelf books={this.getBooksByShelf('currentlyReading')} bookShelfTitle='Currently Reading' 
-              onChangeShelf={this.onChangeShelf} 
-              />
-              <BookShelf books={this.getBooksByShelf('wantToRead')} bookShelfTitle='Want to Read' 
-              onChangeShelf={this.onChangeShelf} 
-              />
-              <BookShelf books={this.getBooksByShelf('read')} bookShelfTitle='Read' 
-              onChangeShelf={this.onChangeShelf} 
-              />            
+          <ListBooks onAddBook={this.onAddBook}>
+              <BookShelf bookShelfTitle='Currently Reading'>
+                {currentShelf}
+              </BookShelf>
+              <BookShelf bookShelfTitle='Want to Read'>
+                {wantToReadShelf}
+              </BookShelf>
+              <BookShelf bookShelfTitle='Read'>
+                {readShelf}
+              </BookShelf>              
           </ListBooks>
         )}
       </div>

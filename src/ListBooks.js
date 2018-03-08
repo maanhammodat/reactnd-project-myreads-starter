@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 
 class ListBooks extends Component {
 
-  state = {
-    query: ''
+  constructor(props) {
+    super(props);
+
   }
 
   render() {
@@ -19,7 +20,7 @@ class ListBooks extends Component {
           </div>
         </div>
         <div className="open-search">
-          <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
+          <a onClick={this.props.onAddBook}>Add a book</a>
         </div>
       </div>
     )

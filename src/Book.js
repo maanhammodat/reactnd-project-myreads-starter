@@ -9,7 +9,7 @@ class Book extends Component {
     
   
     this.state = {
-      shelf: this.props.shelf
+      shelf: this.props.book.shelf
     }
 
     this.onChangeShelf = this.onChangeShelf.bind(this);
@@ -19,18 +19,20 @@ class Book extends Component {
   onChangeShelf(e){
     
     let shelf = e.target.value;
-    let id = this.props.id;
-    console.log('change ',id,'to shelf', shelf);
-    //this.props.onChangeShelf(id, shelf);
+    let id = this.props.book.id;
+    //console.log('change ',id,'to shelf', shelf);
+    this.props.onChangeShelf(this.props.book, shelf);
 
-    BooksAPI.update(id, shelf).then((res) => {
-      console.log('change shelf done!', JSON.stringify(res));
-      // this.setState({ books }); console.log(books);
-      // console.log(this.state);
-    },
-    (err) => {
-      console.log('fail: ', err);
-    })
+    this.setState({ shelf: shelf });
+
+    // BooksAPI.update(id, shelf).then((res) => {
+    //   console.log('change shelf done!', JSON.stringify(res));
+    //   // this.setState({ books }); console.log(books);
+    //   // console.log(this.state);
+    // },
+    // (err) => {
+    //   console.log('fail: ', err);
+    // })
 
     // BooksAPI.update(this.props.id, shelf).then(() => {
     //   console.log('done!');
@@ -52,7 +54,8 @@ class Book extends Component {
   }
 
   render() {
-    const { title, author, thumbnail, shelf, id } = this.props;
+    const { title, author, shelf, id } = this.props.book;
+    const { thumbnail } = this.props.book.imageLinks;
     return (
       <li>
         <div className="book">
