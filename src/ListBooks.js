@@ -1,11 +1,28 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import * as BooksAPI from './BooksAPI';
 
 class ListBooks extends Component {
 
   constructor(props) {
     super(props);
+    
+    this.setBooks = this.setBooks.bind(this);
+  }
 
+  componentWillMount() {
+    this.props.hideSearchPage();
+  }
+
+  componentDidMount() {
+    this.setBooks();
+  }
+
+  setBooks(){
+    BooksAPI.getAll().then((books) => {
+      this.props.setBooks(books);      
+    })
   }
 
   render() {
@@ -20,7 +37,7 @@ class ListBooks extends Component {
           </div>
         </div>
         <div className="open-search">
-          <a onClick={this.props.onAddBook}>Add a book</a>
+          <Link to='/search' onClick={this.props.showSearchPage}>Add a book</Link>
         </div>
       </div>
     )
