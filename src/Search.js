@@ -8,11 +8,19 @@ class Search extends Component {
     constructor(props) {
         super(props);
 
+        //Bind the following functions to the class to avoid collisions with `this`
         this.searchBooks = this.searchBooks.bind(this);
     }
 
+    static propTypes = {
+        setBooks: PropTypes.func.isRequired,
+        showSearchPage: PropTypes.func.isRequired,
+        hideSearchPage: PropTypes.func.isRequired
+    }
+
     state = {
-        query: ''
+        query: '',
+        validSearch: false
     }
 
     componentWillMount() {
@@ -27,36 +35,33 @@ class Search extends Component {
 
         this.setState({ query });
 
-        query != '' &&
-        BooksAPI.search(query).then((res) => {
-            console.log('searchBooks: ',res);
-            if(res){
-                if(res.error){
-                    this.setState({ query: '' });
-                    return false;
+        if(query === ''){
+            this.setState({ validSearch: false });
+            return false;
+        }else{
+            BooksAPI.search(query).then((res) => {
+                if(res){
+                    if(res.error){
+                        this.setState({ validSearch: false });
+                        return false;
+                    }
+                    this.props.setBooks(res);
+                    this.setState({ validSearch: true });
                 }
-                this.props.setBooks(res);
-            }
-                         
-        })
+                                
+            })
+        }
     }
 
     render() {
-        let output = (this.state.query == '' ? '' : this.props.children);
-        console.log('output', output);
+
+        let output = (!this.state.validSearch ? '' : this.props.children);
+        
         return (
             <div className="search-books">
                 <div className="search-books-bar">
                     <Link className="close-search" to='/' onClick={this.props.hideSearchPage}>Close</Link>
                     <div className="search-books-input-wrapper">
-                    {/*
-                        NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                        You can find these search terms here:
-                        https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                        However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                        you don't find a specific author or title. Every search is limited by search terms.
-                    */}
                         <input 
                             type="text" 
                             placeholder="Search by title or author"
@@ -74,4 +79,4 @@ class Search extends Component {
     }
 }
 
-export default Search
+export default Search;

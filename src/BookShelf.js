@@ -1,7 +1,11 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class BookShelf extends Component {
+
+  static propTypes = {
+    bookShelfTitle: PropTypes.string
+  }
 
   render() {
 
@@ -18,4 +22,4 @@ class BookShelf extends Component {
   }
 }
 
-export default BookShelf
+export default BookShelf;

@@ -5,66 +5,59 @@ import * as BooksAPI from './BooksAPI';
 class Book extends Component {
   
   constructor(props) {
-    super(props);    
-    
-  
-    this.state = {
-      shelf: this.props.book.shelf
-    }
+    super(props);  
 
+    //Bind the following functions to the class to avoid collisions with `this`
     this.onChangeShelf = this.onChangeShelf.bind(this);
   }
-  
 
+  static propTypes = {
+    book: PropTypes.object.isRequired,
+    onChangeShelf: PropTypes.func.isRequired
+  }
+
+  state = {
+    shelf: 'none'
+  }
+
+  componentDidMount(){
+    BooksAPI.get(this.props.book.id).then((book) => {
+      
+      let shelf = book.shelf ? book.shelf : 'none';
+
+      this.setState({ shelf });  
+    })
+  }
   onChangeShelf(e){
     
     let shelf = e.target.value;
-    let id = this.props.book.id;
-    //console.log('change ',id,'to shelf', shelf);
+    
     this.props.onChangeShelf(this.props.book, shelf);
 
     this.setState({ shelf: shelf });
-
-    // BooksAPI.update(id, shelf).then((res) => {
-    //   console.log('change shelf done!', JSON.stringify(res));
-    //   // this.setState({ books }); console.log(books);
-    //   // console.log(this.state);
-    // },
-    // (err) => {
-    //   console.log('fail: ', err);
-    // })
-
-    // BooksAPI.update(this.props.id, shelf).then(() => {
-    //   console.log('done!');
-    //   this.setState(state => ({
-    //     shelf: shelf
-    //   }))
-    //   console.log(this.state);
-    // },
-    // (err) => {
-    //   console.log('fail: ', err);
-    // })
-
-    // BooksAPI.update(id, shelf).then(function (value) {
-    //   this.setState({ shelf: shelf })
-    // }, function (err) {
-    //   console.log('fail: ', err);
-    // });
-
   }
 
   render() {
-    const { title, author, shelf, id } = this.props.book;
-    const { thumbnail } = this.props.book.imageLinks;
+
+    const { title, authors } = this.props.book;
+    
+    const { imageLinks } = this.props.book;
+
+    let bookCover = imageLinks ? 
+      <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url("' + imageLinks.thumbnail + '")' }}></div>
+      : '';
+    
+    let bookAuthors = authors ? <div className="book-authors">{authors}</div> : '';
+
     return (
       <li>
         <div className="book">
           <div className="book-top">
-            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url("' + thumbnail + '")' }}></div>
+            {bookCover}
             <div className="book-shelf-changer">
               <select value={this.state.shelf} onChange={this.onChangeShelf}>
-                <option value="none" disabled>Move to...</option>
-                <option value="currentlyReading" defaultValue>Currently Reading</option>
+                <option value="move" disabled>Move to...</option>
+                <option value="currentlyReading">Currently Reading</option>
                 <option value="wantToRead">Want to Read</option>
                 <option value="read">Read</option>
                 <option value="none">None</option>
@@ -72,11 +65,11 @@ class Book extends Component {
             </div>
           </div>
           <div className="book-title">{title}</div>
-          <div className="book-authors">{author}</div>
+          {bookAuthors}
         </div>
       </li>
     )
   }
 }
 
-export default Book
+export default Book;

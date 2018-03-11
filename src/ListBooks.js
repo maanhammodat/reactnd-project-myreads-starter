@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import * as BooksAPI from './BooksAPI';
 
 class ListBooks extends Component {
@@ -8,7 +8,14 @@ class ListBooks extends Component {
   constructor(props) {
     super(props);
     
+    //Bind the following functions to the class to avoid collisions with `this`
     this.setBooks = this.setBooks.bind(this);
+  }
+
+  static propTypes = {
+    setBooks: PropTypes.func.isRequired,
+    showSearchPage: PropTypes.func.isRequired,
+    hideSearchPage: PropTypes.func.isRequired
   }
 
   componentWillMount() {
@@ -21,7 +28,7 @@ class ListBooks extends Component {
 
   setBooks(){
     BooksAPI.getAll().then((books) => {
-      this.props.setBooks(books);      
+      this.props.setBooks(books); 
     })
   }
 
@@ -44,4 +51,4 @@ class ListBooks extends Component {
   }
 }
 
-export default ListBooks
+export default ListBooks;
