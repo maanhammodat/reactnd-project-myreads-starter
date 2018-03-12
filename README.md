@@ -5,5 +5,5 @@ It also includes a search page that allows you to find books to categorise and a
 
 ## Installation
 
-To install run `npm install` at the project directory  
+To install, run `npm install` at the project directory  
 To launch, run `npm start` at the project directory
