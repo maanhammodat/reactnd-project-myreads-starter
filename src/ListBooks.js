@@ -5,9 +5,9 @@ import * as BooksAPI from './BooksAPI';
 
 class ListBooks extends Component {
 
-  constructor(props) {
-    super(props);
-    
+  constructor() {
+    super();
+
     //Bind the following functions to the class to avoid collisions with `this`
     this.setBooks = this.setBooks.bind(this);
   }
@@ -18,17 +18,20 @@ class ListBooks extends Component {
     hideSearchPage: PropTypes.func.isRequired
   }
 
+  //Trigger hideSearchPage() to set parent showSearchPage state to false
   componentWillMount() {
     this.props.hideSearchPage();
   }
 
+  //Trigger setBooks to retrieve book data to iterate through
   componentDidMount() {
     this.setBooks();
   }
 
+  //Set parent state with books array to render Book and BookShelf components as children props
   setBooks(){
     BooksAPI.getAll().then((books) => {
-      this.props.setBooks(books); 
+      this.props.setBooks(books);
     })
   }
 

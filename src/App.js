@@ -10,8 +10,8 @@ import Search from './Search';
 
 class BooksApp extends React.Component {
 
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     //Bind the following functions to the class to avoid collisions with `this`
     this.onChangeShelf = this.onChangeShelf.bind(this);
@@ -20,7 +20,7 @@ class BooksApp extends React.Component {
     this.hideSearchPage = this.hideSearchPage.bind(this);
   }
 
-  state = {    
+  state = {
     showSearchPage: null,
     books: []
   }
@@ -36,19 +36,18 @@ class BooksApp extends React.Component {
     return booksByShelf;
   }
 
-  //Updates book shelf by 
+  //Updates book shelf by
   //1. Passing in book object and modifying its shelf property,
   //2. Updating the state by removing the old book object through a filter and adding the new book object
   //3. Calling BooksApI to update the remote data
   onChangeShelf(book, newShelf){
-    
     book.shelf = newShelf;
-    
-    this.setState((state) => ({
-      books: state.books.filter((b) => b.id !== book.id).concat([book])
-    }))
 
-    BooksAPI.update(book, newShelf);
+    BooksAPI.update(book, newShelf).then(() => {
+      this.setState((state) => ({
+        books: state.books.filter((b) => b.id !== book.id).concat([book])
+      }))
+    });
   }
 
   showSearchPage() {
@@ -63,11 +62,11 @@ class BooksApp extends React.Component {
 
     //ListBooks and Search component variables instantiated regardless of state to avoid lint errors
     let currentShelf, wantToReadShelf, readShelf, searchBooks;
-    
+
     //ListBooks logic, uses book data from BooksAPI.getAll() - see ListBooks component
     //3 book shelves are populated and Books are generated with the entire book object passed in to the prop
     if(this.state.showSearchPage === false){
-      
+
       currentShelf = this.getBooksByShelf('currentlyReading');
       currentShelf = currentShelf.map((book, index) => {
         return (
@@ -116,12 +115,12 @@ class BooksApp extends React.Component {
       });
 
     }
-    
+
     return (
 
       <div className="app">
 
-        <Route exact path="/" render={() => (          
+        <Route exact path="/" render={() => (
           <ListBooks setBooks={this.setBooks} showSearchPage={this.showSearchPage} hideSearchPage={this.hideSearchPage}>
             <BookShelf bookShelfTitle='Currently Reading'>
               {currentShelf}
@@ -132,15 +131,15 @@ class BooksApp extends React.Component {
             <BookShelf bookShelfTitle='Read'>
               {readShelf}
             </BookShelf>
-          </ListBooks>          
+          </ListBooks>
         )} />
-        
+
         <Route path="/search" render={() => (
           <Search setBooks={this.setBooks} showSearchPage={this.showSearchPage} hideSearchPage={this.hideSearchPage}>
             {searchBooks}
           </Search>
         )} />
-      
+
       </div>
 
     )
